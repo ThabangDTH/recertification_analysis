@@ -1,0 +1,46 @@
+# ---------------------------------------------------------------------------
+# Data: NEVER commit. These folders hold personal information (names, dates of
+# birth, household details of children and families). Only the code is versioned.
+# ---------------------------------------------------------------------------
+NISSA Data Extracts/
+Old NISSA Data Extracts/
+InProgram/
+PMT Scores/
+Community Validation/
+
+# Generated outputs: workbooks, dashboards, zips and cached results (all contain personal data)
+output/
+*_results_cache.pkl
+
+# Any stray spreadsheet or export outside the folders above
+*.xlsx
+*.xlsm
+*.xls
+*.csv
+*.zip
+
+# Excel / Office lock files
+~$*
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---------------------------------------------------------------------------
+# Editors, OS and tools
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+.claude/

@@ -1,0 +1,6 @@
+pandas>=3.0
+numpy>=2.3
+openpyxl>=3.1
+xlsxwriter>=3.2
+jellyfish>=1.0
+rapidfuzz>=3.9
