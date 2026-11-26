@@ -123,3 +123,15 @@ MATCH_SUGGESTION = {
 CACHE_NAME = "_results_cache.pkl"  # per-council results, reused to build the combined analysis
 COMBINED_NAME = "All_Councils"
 COMBINED_TITLE = "All Community Councils"
+
+# Potential household lists (targeting) -----------------------------------------------------------
+# Per council, the poorest households by PMT score (lowest first) that have at least one eligible child.
+CGP_TARGET = 400    # CGP households: with a proposed new entrant (eligible child not yet in the programme)
+OVCB_TARGET = 500   # OVC-B households: with an eligible child aged 12-17
+CGP_TARGET_DIR = "Potential_CGP_Households"
+OVCB_TARGET_DIR = "Potential_OVCB_Households"
+
+# Enrolment invitation forms (Form B2), one PDF per council with a page per village ----------------
+ENROLMENT_TEMPLATE = "Enrolment Invitation List.docx"
+ENROLMENT_DIR = "Enrolment_Invitation_Lists"
+ENROLMENT_ROWS_PER_PAGE = 8  # household rows the template's page holds
