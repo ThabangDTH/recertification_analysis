@@ -72,8 +72,8 @@ def build_combined(out_root: Path) -> bool:
           f"OVC-B {S['ovcb_children']:,} children")
     write_outputs(R, S, out_root / COMBINED_NAME, COMBINED_NAME)
     cols = ["council", "baseline_hh", "hh_enumerated", "hh_poor_only", "hh_ultra", "hh_poor", "hh_eligible", "children_eligible", "ben_children",
-            "match_rate", "remain_children", "exit_children", "flag_children", "new_children", "prog_hh_remain",
-            "prog_hh_exit", "prog_hh_flag", "hh_new", "pa_hh", "ovcb_hh", "ovcb_children"]
+            "match_rate", "remain_children", "exit_children", "new_children", "prog_hh_remain",
+            "prog_hh_exit", "hh_new", "pa_hh", "ovcb_hh", "ovcb_children"]
     allp = out_root / "All_Councils_Summary.xlsx"
     try:
         pd.DataFrame(summaries + [S])[cols].to_excel(allp, index=False)
