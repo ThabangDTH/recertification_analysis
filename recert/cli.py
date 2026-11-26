@@ -10,6 +10,8 @@ from pathlib import Path
 from .constants import CACHE_NAME, COMBINED_NAME
 from .inputs import known_councils, locate_inputs
 from .pipeline import build_combined, run_council, write_outputs
+from .enrolment import build_enrolment
+from .targeting import build_targeting
 from .summary import summarise
 
 
@@ -22,6 +24,10 @@ def main():
     g.add_argument("--list", action="store_true", help="List councils and which inputs are present")
     g.add_argument("--rewrite", action="store_true",
                    help="Rewrite every workbook and dashboard from saved results (after a layout change; no re-matching)")
+    g.add_argument("--enrolment", action="store_true",
+                   help="Build the enrolment invitation forms (one PDF per council) from councils already run")
+    g.add_argument("--targeting", action="store_true",
+                   help="Build only the potential CGP / OVC-B beneficiary lists from councils already run")
     g.add_argument("--combined", action="store_true",
                    help="Rebuild only the combined all-councils analysis from councils already run")
     ap.add_argument("--data-dir", default=".", help="Folder that contains the three input folders (default: .)")
@@ -43,6 +49,12 @@ def main():
 
     if args.combined:
         sys.exit(0 if build_combined(out_root) else 1)
+
+    if args.enrolment:
+        sys.exit(0 if build_enrolment(out_root, base) else 1)
+
+    if args.targeting:
+        sys.exit(0 if build_targeting(out_root, base) else 1)
 
     if args.rewrite:
         for c in sorted(p for p in out_root.glob(f"*/{CACHE_NAME}") if p.parent.name != COMBINED_NAME):
@@ -66,5 +78,6 @@ def main():
         sys.exit(1)
     if args.all:
         build_combined(out_root)
+        build_targeting(out_root, base)
     else:
         print("   (run with --combined to refresh the all-councils analysis)")
