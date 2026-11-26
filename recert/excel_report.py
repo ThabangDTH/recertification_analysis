@@ -89,13 +89,20 @@ def write_excel(R: dict, S: dict, T: dict, path: Path):
             ch.set_size({"width": width, "height": height or max(200, 60 + 34 * (r1 - r0 + 1))})
             ws.insert_chart(anchor, ch, {"x_offset": x_offset, "y_offset": 0})
 
+        # Flagged-for-investigation figures are left out of the Summary sheet; the children are still
+        # listed in full on the FlaggedForInvestigation sheet.
+        def drop_flagged(df):
+            return None if df is None else df[~df.iloc[:, 0].astype(str).str.startswith("Flagged")].reset_index(drop=True)
+        T_sum = dict(T, cgp_glance=drop_flagged(T["cgp_glance"]), outcome=drop_flagged(T["outcome"]),
+                     by_council=None if T.get("by_council") is None else T["by_council"].drop(columns="Flagged", errors="ignore"))
+
         row = 3
         glance_rows = {}
         for key, title in (("hh_glance", "Households at a glance"),
                            ("cgp_glance", "CGP (Child Grant Programme) at a glance"),
                            ("pa_glance", "PA (Public Assistance) at a glance"),
                            ("ovcb_glance", "OVC-B (Orphans and Vulnerable Children Bursary) at a glance")):
-            first, end = table(T[key], row, title, text_num_cols=("Number",))
+            first, end = table(T_sum[key], row, title, text_num_cols=("Number",))
             glance_rows[key] = (row, first)  # heading row, first data row ("Eligible Poor households")
             row = end + 3
 
@@ -122,7 +129,7 @@ def write_excel(R: dict, S: dict, T: dict, path: Path):
         bar_chart("OVC-B: eligible children by age", (ov_head, ov_head + OVCB_MAX_AGE - OVCB_MIN_AGE), 29,
                   f"F{ov_head + 1}", "#2a78d6", height=ov_height, width=440, cat_col=28, hidden_data=True,
                   x_offset=12 + 440 + 12, small_labels=True)
-        bc = T.get("by_council")
+        bc = T_sum.get("by_council")
         if bc is not None:
             num = [c for c in bc.columns if c not in ("Community Council", "Match Rate")]
             rng = table(bc, row, "Results by community council", num_cols=num)
@@ -166,10 +173,10 @@ def write_excel(R: dict, S: dict, T: dict, path: Path):
         rng = table(T["by_cbc"], row, "Households by community classification", num_cols=("Households",))
         bar_chart("Households by community classification", rng, 1, f"F{row + 1}", "#2a78d6")
         row = max(rng[1] + 3, row + 12)
-        rng = table(T["outcome"], row, "What happens to children already in the programme",
+        rng = table(T_sum["outcome"], row, "What happens to children already in the programme",
                     num_cols=("Children", "Households"))
         bar_chart("Children already in programme", rng, 1, f"F{row + 1}", "#eb6834", height=230,
-                  colors=["#2a78d6", "#eb6834", "#eda100"])
+                  colors=["#2a78d6", "#eb6834"])
         row = max(rng[1] + 3, row + 14)
         if len(T["exit_reasons"]):
             rng = table(T["exit_reasons"], row, "Reasons for exiting the program", num_cols=("Children",))
@@ -186,8 +193,6 @@ def write_excel(R: dict, S: dict, T: dict, path: Path):
         bar_chart("Match Result of Beneficiaries In Program against NISSA data", (row + 1, row + len(mq)), 26,
                   f"A{row + 2}", "#2a78d6", height=300, cat_col=25, width=820,
                   colors=["#2a78d6", "#2a78d6", "#2a78d6", "#eda100", "#eda100"], hidden_data=True)
-        ws.write(row + 17, 0, "Children with a Low Match or No Match are not exited. They are flagged for "
-                              "investigation (see the FlaggedForInvestigation sheet).", f_sub)
 
         # ---------------- data sheets ----------------
         def sheet(df, name, status_col=None):
