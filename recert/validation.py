@@ -97,7 +97,8 @@ def apply_cv(hh: pd.DataFrame, council: str, base: Path) -> tuple[pd.DataFrame, 
     m["Name_Sim"] = [fuzz.token_sort_ratio(str(a).upper(), str(b).upper()) if f else np.nan
                      for a, b, f in zip(m["CV_Head"], m["HouseholdHead"], found)]
     name_ok = m["Name_Sim"] >= CV_NAME_MIN
-    says_changed = m["CV_Outcome"].str.lower().str.startswith("cbc changed")
+    # Exports label a correction "CBC Changed" or (Matsoku 2026 form) just "Changed"
+    says_changed = m["CV_Outcome"].str.lower().str.match(r"^(cbc\s+)?changed")
     same = m["CV_CBC"] == m["Updated_CBC"]
     m["Result"] = np.select(
         [~found, ~name_ok, says_changed & ~same & (m["CV_CBC"] != "Unclassified"), says_changed, same],
